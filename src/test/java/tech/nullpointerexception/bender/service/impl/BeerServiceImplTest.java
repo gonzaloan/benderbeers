@@ -8,10 +8,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tech.nullpointerexception.bender.dto.BeerDto;
+import tech.nullpointerexception.bender.dto.BeerPriceDto;
 import tech.nullpointerexception.bender.exception.BeerException;
 import tech.nullpointerexception.bender.mappers.BeerMapper;
 import tech.nullpointerexception.bender.model.Beer;
 import tech.nullpointerexception.bender.repository.BeerRepository;
+import tech.nullpointerexception.bender.service.CurrencyService;
 import tech.nullpointerexception.bender.utils.TestConstants;
 
 import java.util.Collections;
@@ -20,14 +22,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class BeerServiceImplTest {
 
     @Mock
     private BeerRepository beerRepository;
+
+    @Mock
+    private CurrencyService currencyService;
+
 
     @InjectMocks
     private BeerServiceImpl beerService;
@@ -101,5 +106,28 @@ class BeerServiceImplTest {
 
     @Test
     void getBeerListedPriceByCurrencyAndQuantity() {
+        Mockito.when(beerRepository.findById(anyInt()))
+                .thenReturn(Optional.of(BeerMapper.INSTANCE.beerDtoToBeer(TestConstants.GET_NEW_BEER())));
+
+        Mockito.when(currencyService.convertBetweenCurrency(anyString(), anyString(), anyDouble())).thenReturn(1.2);
+
+        BeerPriceDto beerPriceDto = beerService.getBeerListedPriceByCurrencyAndQuantity(1, "USD", 6);
+
+        assertThat(beerPriceDto).isNotNull();
+        assertThat(beerPriceDto.getTotalPrice()).isInstanceOf(Double.class);
+
+    }
+
+    @Test
+    void getBeerListedPriceByCurrencyAndQuantity_when_currency_is_invalid() {
+        Mockito.when(beerRepository.findById(anyInt()))
+                .thenReturn(Optional.of(BeerMapper.INSTANCE.beerDtoToBeer(TestConstants.GET_NEW_BEER())));
+
+        Mockito.when(currencyService.convertBetweenCurrency(anyString(), anyString(), anyDouble())).thenReturn(null);
+
+        Assertions.assertThrows(BeerException.class, () -> {
+            BeerPriceDto beerPriceDto = beerService.getBeerListedPriceByCurrencyAndQuantity(1, "USD", 6);
+        });
+
     }
 }

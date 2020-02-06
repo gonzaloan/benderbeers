@@ -47,7 +47,7 @@ class BeerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$.[0].name", is(TestConstants.GET_BEER_LIST().get(0).getName())))
+                .andExpect(jsonPath("$.[0].Name", is(TestConstants.GET_BEER_LIST().get(0).getName())))
                 .andDo(print());
     }
 
@@ -71,7 +71,7 @@ class BeerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/beers/{beerID}", "1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.name", is(TestConstants.GET_BEER_LIST().get(0).getName())))
+                .andExpect(jsonPath("$.Name", is(TestConstants.GET_BEER_LIST().get(0).getName())))
                 .andDo(print());
 
     }
@@ -83,10 +83,10 @@ class BeerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/beers/{beerID}", "9")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.timestamp").exists())
-                .andExpect(jsonPath("$.code", is(404)))
-                .andExpect(jsonPath("$.message", is(UtilConstants.ERROR_MESSAGE)))
-                .andExpect(jsonPath("$.details", hasSize(1)))
+                .andExpect(jsonPath("$.Timestamp").exists())
+                .andExpect(jsonPath("$.Code", is(404)))
+                .andExpect(jsonPath("$.Message", is(UtilConstants.ERROR_MESSAGE)))
+                .andExpect(jsonPath("$.Details", hasSize(1)))
                 .andDo(print());
 
     }
@@ -150,7 +150,7 @@ class BeerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/beers/{beerID}/boxprice?currency=CLP&quantity=6", "1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.totalPrice", is(3500.0)))
+                .andExpect(jsonPath("$.['Total Price']", is(3500.0)))
                 .andDo(print());
 
     }
@@ -162,10 +162,10 @@ class BeerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/beers/{beerID}/boxprice?currency=CLP&quantity=6", "1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.timestamp").exists())
-                .andExpect(jsonPath("$.code", is(404)))
-                .andExpect(jsonPath("$.message", is(UtilConstants.ERROR_MESSAGE)))
-                .andExpect(jsonPath("$.details", hasSize(1)))
+                .andExpect(jsonPath("$.Timestamp").exists())
+                .andExpect(jsonPath("$.Code", is(404)))
+                .andExpect(jsonPath("$.Message", is(UtilConstants.ERROR_MESSAGE)))
+                .andExpect(jsonPath("$.Details", hasSize(1)))
                 .andDo(print());
 
     }
