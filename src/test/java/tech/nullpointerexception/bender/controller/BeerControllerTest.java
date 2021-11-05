@@ -126,7 +126,7 @@ class BeerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/beers")
                 .content(objectMapper.writeValueAsString(beerDto))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andDo(print());
 
     }
