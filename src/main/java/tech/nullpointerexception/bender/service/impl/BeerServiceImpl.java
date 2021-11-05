@@ -2,6 +2,7 @@ package tech.nullpointerexception.bender.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import tech.nullpointerexception.bender.dto.BeerDto;
 import tech.nullpointerexception.bender.dto.BeerPriceDto;
@@ -20,6 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Scope("prototype")
 @RequiredArgsConstructor
 @Slf4j
 public class BeerServiceImpl implements BeerService {
@@ -29,7 +31,6 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public List<BeerDto> getAllBeers() {
-        log.info("Dentro de Service de Get All Beers.");
         return Optional.of(beerRepository.findAll()
                 .stream()
                 .map(BeerMapper.INSTANCE::beerToBeerDto)
@@ -39,7 +40,6 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public BeerDto getBeerById(Integer beerId) {
-        log.info("Dentro de Service de Busqueda de Cerveza por ID {}", beerId);
         return beerRepository.findById(beerId)
                 .map(BeerMapper.INSTANCE::beerToBeerDto)
                 .orElse(null);
@@ -48,7 +48,6 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public BeerDto createBeer(BeerDto beerDto) {
-        log.info("Creacion de nueva Beer, createBeer en Servicio Impl: {}", beerDto.toString());
         if (beerRepository.existsById(beerDto.getId())) {
             throw new BeerException(UtilConstants.CANT_REPEAT_BEER_ID);
         }
@@ -62,8 +61,6 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public BeerPriceDto getBeerListedPriceByCurrencyAndQuantity(Integer beerId, String currency, Integer quantity) {
-        log.info("Dentro de getBeerListedPriceByCurrencyAndQuantity");
-        //Buscamos el Id de la cerveza:
         BeerDto beerById = Optional.ofNullable(this.getBeerById(beerId)).orElseThrow(NotFoundException::new);
 
         return Optional.of(beerById)

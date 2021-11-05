@@ -1,6 +1,7 @@
 package tech.nullpointerexception.bender.utils;
 
 import tech.nullpointerexception.bender.dto.BeerDto;
+import tech.nullpointerexception.bender.dto.PiscoDTO;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +40,5 @@ public class TestConstants {
                 .price(1900.0)
                 .build();
     }
-
 
 }

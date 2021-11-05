@@ -20,8 +20,6 @@ public class BeerLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         loadBeers();
     }
-
-
     private void loadBeers() {
 
         if (beerRepository.count() == 0) {
@@ -29,11 +27,6 @@ public class BeerLoader implements CommandLineRunner {
             beerRepository.save(new Beer(1, "Cuello Negro Stout", "Cuello Negro", "Chile", 1900.0, "CLP"));
 
             beerRepository.save(new Beer(2, "Mauco Imperial IPA", "Cervecería Mauco", "Chile", 1500.0, "CLP"));
-
-
         }
-
     }
-
-
 }
