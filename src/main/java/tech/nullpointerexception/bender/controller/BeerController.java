@@ -39,9 +39,9 @@ public class BeerController {
 
     @GetMapping("/{beerID}")
     @ResponseStatus(HttpStatus.OK)
-    public BeerDto getBeerById(@PathVariable("beerID") Integer beerId) {
+    public BeerDto getBeerById(@PathVariable("beerID") Integer beerId) throws Exception{
         return Optional.ofNullable(beerService.getBeerById(beerId))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(Exception::new);
     }
 
     @PostMapping
