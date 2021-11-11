@@ -57,16 +57,4 @@ public class BeerController {
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{beerID}/boxprice")
-    @ResponseStatus(HttpStatus.OK)
-    public BeerPriceDto getPriceListById(@Valid @Range(min = 1, message = UtilConstants.BEER_ID_INVALID) @PathVariable("beerID") Integer beerId,
-                                         @NotNull(message = UtilConstants.CURRENCY_CANT_BE_NULL) @RequestParam(name = "currency") String currency,
-                                         @Valid @Range(min = 0, message = UtilConstants.QUANTITY_INVALID
-                                         ) @RequestParam(name = "quantity") Integer quantity) {
-        return Optional.ofNullable(beerService.getBeerListedPriceByCurrencyAndQuantity(beerId, currency, quantity))
-                .orElseThrow(NotFoundException::new);
-
-    }
-
-
 }

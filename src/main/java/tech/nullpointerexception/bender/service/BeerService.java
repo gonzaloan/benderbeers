@@ -1,7 +1,6 @@
 package tech.nullpointerexception.bender.service;
 
 import tech.nullpointerexception.bender.dto.BeerDto;
-import tech.nullpointerexception.bender.dto.BeerPriceDto;
 
 import java.util.List;
 
@@ -12,5 +11,4 @@ public interface BeerService {
 
     BeerDto createBeer(BeerDto beerDto);
 
-    BeerPriceDto getBeerListedPriceByCurrencyAndQuantity(Integer beerId, String currency, Integer quantity);
 }

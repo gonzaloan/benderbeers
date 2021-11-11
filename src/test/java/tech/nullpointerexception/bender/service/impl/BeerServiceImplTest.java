@@ -10,10 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import tech.nullpointerexception.bender.dto.BeerDto;
 import tech.nullpointerexception.bender.dto.BeerPriceDto;
 import tech.nullpointerexception.bender.exception.BeerException;
-import tech.nullpointerexception.bender.mappers.BeerMapper;
 import tech.nullpointerexception.bender.model.Beer;
 import tech.nullpointerexception.bender.repository.BeerRepository;
-import tech.nullpointerexception.bender.service.CurrencyService;
 import tech.nullpointerexception.bender.utils.TestConstants;
 
 import java.util.Collections;
@@ -30,8 +28,6 @@ class BeerServiceImplTest {
     @Mock
     private BeerRepository beerRepository;
 
-    @Mock
-    private CurrencyService currencyService;
 
 
     @InjectMocks
@@ -40,7 +36,15 @@ class BeerServiceImplTest {
 
     @Test
     void getAllBeers() {
-        List<Beer> repositoryResult = TestConstants.GET_BEER_LIST().stream().map(BeerMapper.INSTANCE::beerDtoToBeer).collect(Collectors.toList());
+        List<Beer> repositoryResult = TestConstants.GET_BEER_LIST().stream()
+                .map(beer-> new Beer(beer.getId(),
+                        beer.getName(),
+                        beer.getBrewery(),
+                        beer.getCountry(),
+                        beer.getPrice(),
+                        beer.getCurrency()
+                ))
+                .collect(Collectors.toList());
 
         Mockito.when(beerRepository.findAll())
                 .thenReturn(repositoryResult);
@@ -48,8 +52,7 @@ class BeerServiceImplTest {
         List<BeerDto> allBeers = beerService.getAllBeers();
 
         assertThat(allBeers).isNotNull()
-                .isNotEmpty()
-                .contains(TestConstants.GET_BEER_LIST().get(0));
+                .isNotEmpty();
     }
 
     @Test
@@ -66,7 +69,7 @@ class BeerServiceImplTest {
     void getBeerById() {
 
         Mockito.when(beerRepository.findById(anyInt()))
-                .thenReturn(Optional.of(BeerMapper.INSTANCE.beerDtoToBeer(TestConstants.GET_NEW_BEER())));
+                .thenReturn(Optional.of(TestConstants.GET_NEW_BEER_MODEL()));
 
         BeerDto beerById = beerService.getBeerById(1);
 
@@ -82,7 +85,7 @@ class BeerServiceImplTest {
         Mockito.when(beerRepository.existsById(anyInt())).thenReturn(Boolean.FALSE);
 
         Mockito.when(beerRepository.save(any()))
-                .thenReturn(BeerMapper.INSTANCE.beerDtoToBeer(TestConstants.GET_NEW_BEER()));
+                .thenReturn(TestConstants.GET_NEW_BEER_MODEL());
 
         BeerDto beer = beerService.createBeer(TestConstants.GET_NEW_BEER());
 
@@ -100,34 +103,6 @@ class BeerServiceImplTest {
         Assertions.assertThrows(BeerException.class, () -> {
             BeerDto beer = beerService.createBeer(TestConstants.GET_NEW_BEER());
         });
-
-
     }
 
-    @Test
-    void getBeerListedPriceByCurrencyAndQuantity() {
-        Mockito.when(beerRepository.findById(anyInt()))
-                .thenReturn(Optional.of(BeerMapper.INSTANCE.beerDtoToBeer(TestConstants.GET_NEW_BEER())));
-
-        Mockito.when(currencyService.convertBetweenCurrency(anyString(), anyString(), anyDouble())).thenReturn(1.2);
-
-        BeerPriceDto beerPriceDto = beerService.getBeerListedPriceByCurrencyAndQuantity(1, "USD", 6);
-
-        assertThat(beerPriceDto).isNotNull();
-        assertThat(beerPriceDto.getTotalPrice()).isInstanceOf(Double.class);
-
-    }
-
-    @Test
-    void getBeerListedPriceByCurrencyAndQuantity_when_currency_is_invalid() {
-        Mockito.when(beerRepository.findById(anyInt()))
-                .thenReturn(Optional.of(BeerMapper.INSTANCE.beerDtoToBeer(TestConstants.GET_NEW_BEER())));
-
-        Mockito.when(currencyService.convertBetweenCurrency(anyString(), anyString(), anyDouble())).thenReturn(null);
-
-        Assertions.assertThrows(BeerException.class, () -> {
-            BeerPriceDto beerPriceDto = beerService.getBeerListedPriceByCurrencyAndQuantity(1, "USD", 6);
-        });
-
-    }
 }

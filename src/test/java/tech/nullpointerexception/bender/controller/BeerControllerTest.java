@@ -77,31 +77,15 @@ class BeerControllerTest {
     }
 
     @Test
-    void getBeerById_when_fails() throws Exception {
-        Mockito.when(beerService.getBeerById(anyInt())).thenReturn(null);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/beers/{beerID}", "9")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.Timestamp").exists())
-                .andExpect(jsonPath("$.Code", is(404)))
-                .andExpect(jsonPath("$.Message", is(UtilConstants.ERROR_MESSAGE)))
-                .andExpect(jsonPath("$.Details", hasSize(1)))
-                .andDo(print());
-
-    }
-
-    @Test
     void postBeer() throws Exception {
 
-        BeerDto beerDto = BeerDto.builder()
-                .id(5)
-                .name("Cerveza JUNIT")
-                .country("USA")
-                .brewery("Spring Test Cervezas")
-                .currency("CLP")
-                .price(1900.0)
-                .build();
+        BeerDto beerDto = new BeerDto();
+        beerDto.setName("Cerveza JUNIT");
+        beerDto.setBrewery("Spring Test Cervezas");
+        beerDto.setPrice(1900.0);
+        beerDto.setId(5);
+        beerDto.setCountry("USA");
+        beerDto.setCurrency("CLP");
 
         Mockito.when(beerService.createBeer(any())).thenReturn(beerDto);
 
@@ -115,13 +99,11 @@ class BeerControllerTest {
 
     @Test
     void postBeer_test_constraints() throws Exception {
-        //Debería lanzar un error avisando que faltan campos.
-        BeerDto beerDto = BeerDto.builder()
-                //Faltan campos
-                .name("Cerveza JUNIT")
-                .brewery("Spring Test Cervezas")
-                .price(1900.0)
-                .build();
+        //it should throw an error due to missing fields
+        BeerDto beerDto = new BeerDto();
+        beerDto.setName("Cerveza JUNIT");
+        beerDto.setBrewery("Spring Test Cervezas");
+        beerDto.setPrice(1900.0);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/beers")
                 .content(objectMapper.writeValueAsString(beerDto))
@@ -143,30 +125,4 @@ class BeerControllerTest {
 
     }
 
-    @Test
-    void getPriceListById() throws Exception {
-        Mockito.when(beerService.getBeerListedPriceByCurrencyAndQuantity(anyInt(), anyString(), anyInt())).thenReturn(BeerPriceDto.builder().totalPrice(3500.0).build());
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/beers/{beerID}/boxprice?currency=CLP&quantity=6", "1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.['Total Price']", is(3500.0)))
-                .andDo(print());
-
-    }
-
-    @Test
-    void getPriceListById_when_fails() throws Exception {
-        Mockito.when(beerService.getBeerListedPriceByCurrencyAndQuantity(anyInt(), anyString(), anyInt())).thenReturn(null);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/beers/{beerID}/boxprice?currency=CLP&quantity=6", "1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.Timestamp").exists())
-                .andExpect(jsonPath("$.Code", is(404)))
-                .andExpect(jsonPath("$.Message", is(UtilConstants.ERROR_MESSAGE)))
-                .andExpect(jsonPath("$.Details", hasSize(1)))
-                .andDo(print());
-
-    }
 }

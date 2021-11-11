@@ -1,20 +1,18 @@
 package tech.nullpointerexception.bender.bootstrap;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import tech.nullpointerexception.bender.model.Beer;
 import tech.nullpointerexception.bender.repository.BeerRepository;
 
-/**
- * Componente Bootstrap para cargar un par de datos de prueba
- * al iniciar la aplicación.
- */
 @Component
-@RequiredArgsConstructor
 public class BeerLoader implements CommandLineRunner {
 
     private final BeerRepository beerRepository;
+
+    public BeerLoader(BeerRepository beerRepository) {
+        this.beerRepository = beerRepository;
+    }
 
     @Override
     public void run(String... args) throws Exception {

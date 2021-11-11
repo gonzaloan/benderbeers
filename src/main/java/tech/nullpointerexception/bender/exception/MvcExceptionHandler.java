@@ -1,6 +1,5 @@
 package tech.nullpointerexception.bender.exception;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,81 +26,56 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @ControllerAdvice
 @RestController
-@Slf4j
 public class MvcExceptionHandler extends ResponseEntityExceptionHandler {
 
-    /**
-     * Validador de contraints y errores de ingreso
-     *
-     * @param e
-     * @return
-     */
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(value = BAD_REQUEST)
     public ErrorResponse handleConstraintsError(ConstraintViolationException e) {
-        log.error("Se ha generado error por constraints {} ", e.getConstraintViolations());
 
         List<String> errorDetails = e.getConstraintViolations().isEmpty() ? Collections.singletonList(UtilConstants.ERROR_GETTING_DATA) :
                 e.getConstraintViolations().stream()
                         .map(ConstraintViolation::getMessage)
                         .collect(Collectors.toList());
-        return ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .code(HttpStatus.BAD_REQUEST.value())
-                .message(UtilConstants.ERROR_MESSAGE)
-                .details(errorDetails)
-                .build();
-
+        return new ErrorResponse(LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                UtilConstants.ERROR_MESSAGE,
+                errorDetails
+                );
     }
 
-    /**
-     * Errores genericos de Not Found
-     *
-     * @return Error Response con datos JSON del error.
-     */
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(value = NOT_FOUND)
     public ErrorResponse handleExceptionNotFound() {
-        return ErrorResponse
-                .builder()
-                .timestamp(LocalDateTime.now())
-                .code(NOT_FOUND.value())
-                .message(UtilConstants.ERROR_MESSAGE)
-                .details(Collections.singletonList(UtilConstants.NOT_FOUND_DATA))
-                .build();
+        return new ErrorResponse(LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                UtilConstants.ERROR_MESSAGE,
+                Collections.singletonList(UtilConstants.NOT_FOUND_DATA)
+        );
     }
 
-    /**
-     * Controlador para errores generales del servidor referentes a beer.
-     */
+
     @ExceptionHandler(value = {BeerException.class})
     @ResponseStatus(value = INTERNAL_SERVER_ERROR)
     public ErrorResponse handleExceptionGeneral(RuntimeException e) {
-        return ErrorResponse
-                .builder()
-                .timestamp(LocalDateTime.now())
-                .code(INTERNAL_SERVER_ERROR.value())
-                .message(UtilConstants.ERROR_MESSAGE)
-                .details(Collections.singletonList(e.getMessage()))
-                .build();
+        return new ErrorResponse(LocalDateTime.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                UtilConstants.ERROR_MESSAGE,
+                Collections.singletonList(e.getMessage())
+        );
     }
 
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        logger.info("Se ha generado un error. handleMethodArgumentNotValid.-");
         List<String> details = new ArrayList<>();
         for (ObjectError error : ex.getBindingResult().getAllErrors()) {
             details.add(error.getDefaultMessage());
         }
-
-        ErrorResponse errorResponse = ErrorResponse
-                .builder()
-                .timestamp(LocalDateTime.now())
-                .code(BAD_REQUEST.value())
-                .message(UtilConstants.ERROR_MESSAGE)
-                .details(details)
-                .build();
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                UtilConstants.ERROR_MESSAGE,
+                details
+        );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

@@ -1,17 +1,34 @@
 package tech.nullpointerexception.bender.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class BeerPriceDto {
-    //por si se extiende más adelante
+
     @JsonProperty("Total Price")
-    private Double totalPrice;
+    private final Double totalPrice;
+
+    private BeerPriceDto(BeerPriceDtoBuilder builder){
+        this.totalPrice=builder.totalPrice;
+    }
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public static class BeerPriceDtoBuilder{
+        private Double totalPrice;
+
+        public BeerPriceDtoBuilder(Double totalPrice) {
+            this.totalPrice = totalPrice;
+        }
+
+        public BeerPriceDtoBuilder totalPrice(Double totalPrice){
+            this.totalPrice = totalPrice;
+            return this;
+        }
+
+        public BeerPriceDto build(){
+            BeerPriceDto beerPriceDto = new BeerPriceDto(this);
+            return beerPriceDto;
+        }
+    }
 }
