@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -45,7 +46,7 @@ public class BeerController {
     }
 
     @PostMapping
-    public ResponseEntity<BeerDto> handleBeerCreation(@Valid @NotNull @RequestBody BeerDto beerDto) {
+    public ResponseEntity<BeerDto> handleBeerCreation(@RequestBody BeerDto beerDto) {
         BeerDto savedBeer = Optional.ofNullable(beerService.createBeer(beerDto))
                 .orElseThrow(() -> new BeerException(UtilConstants.ERROR_MESSAGE_WHILE_CREATING_BEER));
         HttpHeaders headers = new HttpHeaders();

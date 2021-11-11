@@ -28,6 +28,14 @@ public class Beer {
         this.currency = currency;
     }
 
+    public Beer(String name, String brewery, String country, Double price, String currency) {
+        this.name = name;
+        this.brewery = brewery;
+        this.country = country;
+        this.price = price;
+        this.currency = currency;
+    }
+
     public Integer getId() {
         return id;
     }
